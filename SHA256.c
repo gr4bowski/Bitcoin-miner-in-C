@@ -26,6 +26,12 @@ const u_int32_t K[64] = { 0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956
 
 int main()
 {
+    char *jd = "JEBAĆ DISA SYNA DIABŁA";
+    for (u_int32_t i = 0; i < strlen(jd); i++) {
+        rotateRight(&jd, i);
+        puts(jd);
+    }
+    return 0;
     /* getting user input */
     u_int32_t len = 0;
     printf("Please enter the length of Your message: ");
@@ -42,8 +48,6 @@ int main()
     strcat(temp, input);
     free(input);
 
-    // PRE_PROCESS(temp);
-
     SHA256(temp);
     
     return 0;
@@ -54,10 +58,7 @@ char *PRE_PROCESS(const char* inputString)
 {
     u_int64_t L = strlen(inputString) * 8;
     u_int32_t K = 448 - (L + 1) % 512;
-    char* binStr = stringToBinary(inputString);
-    // strcat(binStr, "1");
-    // for (u_int32_t i = 0; i < K; i++)
-    //     strcat(binStr, "0");
+    char *binStr = stringToBinary(inputString);
     char *binL = intToBinary(L);
 
     size_t outputBits = (strlen(binStr) + strlen(binL) + K + 1) * 8;
@@ -68,14 +69,6 @@ char *PRE_PROCESS(const char* inputString)
         strcat(output, "0");
     strcat(output, binL);
     output[outputBits] = '\0';
-
-    
-    // printf("outputBits = %zu\n", outputBits);
-    // printf("output = \"%s\"\n", output);
-    // printf("output's size = %lu\n", sizeof(output));
-    // printf("output's length = %lu\n", strlen(output));
-    
-    printf("PRE-PROCESS'ed string: %s\n", output);
     free(binStr);
     free(binL);
     return output;
@@ -126,7 +119,8 @@ void rotateLeft(char **string, const u_int32_t rotation)
         temp[i] = string[0][(i + rotation) % len];
     }
     temp[len] = '\0';
-    *string = temp;
+    *string = realloc(temp, (sizeof(temp) * 8));
+    free(temp);
 }
 
 void rotateRight(char **string, const u_int32_t rotation)
@@ -137,5 +131,6 @@ void rotateRight(char **string, const u_int32_t rotation)
         temp[(i + rotation) % len] = string[0][i];
     }
     temp[len] = '\0';
-    *string = temp;
+    *string = realloc(temp, (sizeof(temp) * 8));
+    free(temp);
 }
